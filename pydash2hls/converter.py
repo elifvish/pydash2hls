@@ -227,6 +227,7 @@ class Converter:
             f"#EXT-X-TARGETDURATION:{int(duration)}",
             "#EXT-X-PLAYLIST-TYPE:VOD",
             "#EXT-X-ALLOW-CACHE:YES",
+            f'#EXT-X-MAP:URI="{profile["fragments"][0]["media"]}"'
         ]
 
         if licence:
@@ -240,7 +241,7 @@ class Converter:
             if licence:
                 hls.append(f'#EXT-X-KEY:METHOD=SAMPLE-AES,URI="{licence}"')
 
-        hls.extend(f"#EXTINF:{fragment['extinf']},\n{fragment['media']}" for fragment in profile["fragments"])
+        hls.extend(f"#EXTINF:{fragment['extinf']},\n{fragment['media'].replace('$Number%05d$', f'{i:05d}')}" for i, fragment in enumerate(profile["fragments"][1:], start=1))
         hls.append("#EXT-X-ENDLIST")
         return "\n".join(hls)
 
